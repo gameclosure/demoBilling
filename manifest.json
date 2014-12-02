@@ -1,0 +1,21 @@
+{
+  "appID": "629965dd1b8e4987bdfdc76e711d3866",
+  "dependencies": {
+    "devkit-core": "https://github.com/gameclosure/devkit-core#v2.0.13",
+    "devkit-billing": "https://github.com/gameclosure/billing#v2.0.0"
+  },
+  "shortName": "demoBilling",
+  "studio": {
+    "domain": "gameclosure.com",
+    "name": "GameClosure"
+  },
+  "supportedOrientations": [
+    "portrait"
+  ],
+  "title": "demoBilling",
+  "ios": {
+    "appleID": "947626034",
+    "bundleID": "com.gameclosure.billingdemo",
+    "version": "1.0.0"
+  }
+}
