@@ -12,7 +12,13 @@ import src.views.Overlay as Overlay;
 import device;
 
 import billing;
+import amplitude;
 
+
+ITEMS = {
+  'testpurchase10': {price: .99, quantity: 1},
+  'testpurchase50': {price: 1.99, quantity: 1}
+};
 
 exports = Class(GC.Application, function () {
 
@@ -210,7 +216,19 @@ exports = Class(GC.Application, function () {
   // called after a purchase - includes the app store specific 'signature'
   // for validating the purchase from an external server
   this.onPurchaseWithReceipt = function (info) {
-    this.log("--testgame-- PURCHASE WITH RECEIPT! Item: " + info.sku + " Signature: " + info.signature);
+    this.log("--testgame-- PURCHASE WITH RECEIPT! Item: " + info.sku);
+
+    // send to amplitude
+    var item = ITEMS[info.sku];
+    amplitude.trackRevenue(
+      info.sku,
+      item.price,
+      item.quantity,
+      info.signature,
+      info.purchaseData
+    );
+  };
+
   };
 
   // helper function to wrap up all the demo logging
