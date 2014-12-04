@@ -2,7 +2,8 @@
   "appID": "629965dd1b8e4987bdfdc76e711d3866",
   "dependencies": {
     "devkit-core": "https://github.com/gameclosure/devkit-core#v2.0.13",
-    "devkit-billing": "https://github.com/gameclosure/billing#v2.0.0"
+    "devkit-billing": "https://github.com/gameclosure/billing#v2.0.0",
+    "devkit-amplitude": "https://github.com/gameclosure/amplitude#v2.0.0"
   },
   "shortName": "demoBilling",
   "studio": {
@@ -16,6 +17,12 @@
   "ios": {
     "appleID": "947626034",
     "bundleID": "com.gameclosure.billingdemo",
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "ampKey": "81163e09606cc2fbf10c05d8589503e7",
+    "ampKeyStaging": "81163e09606cc2fbf10c05d8589503e7"
+  },
+  "android": {
+    "ampKey": "81163e09606cc2fbf10c05d8589503e7",
+    "ampKeyStaging": "81163e09606cc2fbf10c05d8589503e7"
   }
 }
