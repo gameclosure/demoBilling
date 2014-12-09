@@ -229,8 +229,6 @@ exports = Class(GC.Application, function () {
     );
   };
 
-  };
-
   // helper function to wrap up all the demo logging
   this.log = function (text, success) {
     logger.log(text);
