@@ -15,7 +15,7 @@ import billing;
 import amplitude;
 
 
-ITEMS = {
+var ITEMS = {
   'testpurchase10': {price: .99, quantity: 1},
   'testpurchase50': {price: 1.99, quantity: 1}
 };
@@ -167,11 +167,8 @@ exports = Class(GC.Application, function () {
     );
 
     // restore managed purchases
-    // TODO: billing.restore is currently broken
+    // TODO: enable billing.restore on ios only
     // billing.restore(this.onRestore);
-
-    // listen for purchases with receipt events
-    billing.on('purchaseWithReceipt', bind(this, this.onPurchaseWithReceipt));
   };
 
   // called to initiate a purchase
@@ -193,8 +190,23 @@ exports = Class(GC.Application, function () {
   };
 
   // called when a purchase succeeds
-  this.onPurchase = function (itemName) {
+  this.onPurchase = function (itemName, transactionInfo) {
     this.log("Purchase Successful! Item: " + itemName);
+
+    // if no transactionInfo, use empty object
+    transactionInfo = transactionInfo || {};
+
+    console.log("Sending transaction data to amplitude", transactionInfo);
+    // send to amplitude for tracking and validation
+    var item = ITEMS[itemName];
+    amplitude.trackRevenue(
+      itemName,
+      item.price,
+      item.quantity,
+      transactionInfo.signature,
+      transactionInfo.purchaseData
+    );
+
     this.overlay.hide();
   };
 
@@ -211,22 +223,6 @@ exports = Class(GC.Application, function () {
     } else {
       this.log("Finished restoring purchases!");
     }
-  };
-
-  // called after a purchase - includes the app store specific 'signature'
-  // for validating the purchase from an external server
-  this.onPurchaseWithReceipt = function (info) {
-    this.log("--testgame-- PURCHASE WITH RECEIPT! Item: " + info.sku);
-
-    // send to amplitude
-    var item = ITEMS[info.sku];
-    amplitude.trackRevenue(
-      info.sku,
-      item.price,
-      item.quantity,
-      info.signature,
-      info.purchaseData
-    );
   };
 
   // helper function to wrap up all the demo logging
