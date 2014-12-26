@@ -135,11 +135,23 @@ exports = Class(GC.Application, function () {
       })
     });
 
-    this.restoreButton = new ButtonView({
+    this.localizeButton = new ButtonView({
       superview: this.view,
       x: buttonPadding,
       y: this.purchaseButtonFail.style.y + 100,
-      width: buttonWidth + buttonWidth + buttonPadding,
+      width: buttonWidth,
+      height: 50,
+      title: "Localize Purchases",
+      onClick: bind(this, function () {
+        this.localizePurchases();
+      })
+    });
+
+    this.restoreButton = new ButtonView({
+      superview: this.view,
+      x: buttonPadding + buttonWidth + buttonPadding,
+      y: this.localizeButton.style.y,
+      width: buttonWidth,
       height: 50,
       title: "Restore Purchases",
       onClick: bind(this, function () {
@@ -177,6 +189,19 @@ exports = Class(GC.Application, function () {
     this.setMarketStatus(
       billing.isMarketAvailable  && 'Available' || 'Unavailable'
     );
+
+    // listen for localization events
+    billing.on("PurchasesLocalized", bind(this, function (data) {
+      logger.log("billing.PurchasesLocalized", data);
+      var itemIds = Object.keys(data.purchases);
+      for (var i = 0; i < itemIds.length; i++) {
+        var itemId = itemIds[i];
+        var item = data.purchases[itemId];
+        this.log("localized item " + item.title +
+                 " price: " + item.displayPrice);
+        logger.log(item.displayPrice, item.title, item.description);
+      }
+    }));
 
   };
 
@@ -238,6 +263,12 @@ exports = Class(GC.Application, function () {
   this.restorePurchases = function () {
     this.log("restoring purchases");
     billing.restore(bind(this, this.onRestore));
+  };
+
+  // send all the purchases to the store for localization
+  this.localizePurchases = function () {
+    this.log("localizing purchases");
+    billing.getLocalizedPurchases(Object.keys(ITEMS));
   };
 
   // helper function to wrap up all the demo logging
