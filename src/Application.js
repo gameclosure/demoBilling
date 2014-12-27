@@ -135,8 +135,20 @@ exports = Class(GC.Application, function () {
       })
     });
 
-    var logViewY = this.purchaseButton50.style.y +
-      this.purchaseButton50.style.height +
+    this.restoreButton = new ButtonView({
+      superview: this.view,
+      x: buttonPadding,
+      y: this.purchaseButtonFail.style.y + 100,
+      width: buttonWidth + buttonWidth + buttonPadding,
+      height: 50,
+      title: "Restore Purchases",
+      onClick: bind(this, function () {
+        this.restorePurchases();
+      })
+    });
+
+    var logViewY = this.restoreButton.style.y +
+      this.restoreButton.style.height +
       250;
 
     this.logView = new LogView({
@@ -166,9 +178,6 @@ exports = Class(GC.Application, function () {
       billing.isMarketAvailable  && 'Available' || 'Unavailable'
     );
 
-    // restore managed purchases
-    // TODO: enable billing.restore on ios only
-    // billing.restore(this.onRestore);
   };
 
   // called to initiate a purchase
@@ -223,6 +232,12 @@ exports = Class(GC.Application, function () {
     } else {
       this.log("Finished restoring purchases!");
     }
+  };
+
+  // send a restore event
+  this.restorePurchases = function () {
+    this.log("restoring purchases");
+    billing.restore(bind(this, this.onRestore));
   };
 
   // helper function to wrap up all the demo logging
