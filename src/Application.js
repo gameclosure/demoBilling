@@ -20,6 +20,20 @@ var ITEMS = {
   'testpurchase50': {price: 1.99, quantity: 1}
 };
 
+// the google store does not allow localizing more
+// than 20 items at once - this demonstrates that
+// billing correctly auto-batches these requests
+var MANY_ITEMS = {
+  'testpurchase10': {price: .99, quantity: 1}
+};
+for (var i = 0; i < 50; i++) {
+  MANY_ITEMS['many_items_test_'+i] = {
+    price: 1.00,
+    quantity: 1
+  }
+};
+MANY_ITEMS['testpurchase50'] = {price: 1.99, quantity: 1};
+
 exports = Class(GC.Application, function () {
 
   this.initUI = function () {
@@ -135,11 +149,35 @@ exports = Class(GC.Application, function () {
       })
     });
 
-    this.restoreButton = new ButtonView({
+    this.localizeButton = new ButtonView({
       superview: this.view,
       x: buttonPadding,
       y: this.purchaseButtonFail.style.y + 100,
-      width: buttonWidth + buttonWidth + buttonPadding,
+      width: buttonWidth,
+      height: 50,
+      title: "Localize Purchases",
+      onClick: bind(this, function () {
+        this.localizePurchases();
+      })
+    });
+
+    this.localizeManyButton = new ButtonView({
+      superview: this.view,
+      x: buttonPadding + buttonWidth + buttonPadding,
+      y: this.localizeButton.style.y,
+      width: buttonWidth,
+      height: 50,
+      title: "Localize Many Purchases",
+      onClick: bind(this, function () {
+        this.localizeManyPurchases();
+      })
+    });
+
+    this.restoreButton = new ButtonView({
+      superview: this.view,
+      x: buttonPadding + buttonWidth + buttonPadding,
+      y: this.localizeManyButton.style.y + 100,
+      width: buttonWidth,
       height: 50,
       title: "Restore Purchases",
       onClick: bind(this, function () {
@@ -178,6 +216,19 @@ exports = Class(GC.Application, function () {
       billing.isMarketAvailable  && 'Available' || 'Unavailable'
     );
 
+    // listen for localization events
+    billing.on("PurchasesLocalized", bind(this, function (data) {
+      logger.log("billing.PurchasesLocalized", data);
+      var itemIds = Object.keys(data.purchases);
+      for (var i = 0; i < itemIds.length; i++) {
+        var itemId = itemIds[i];
+        var item = data.purchases[itemId];
+        this.log("localized item " + item.title +
+                 " price: " + item.displayPrice);
+        logger.log(item.displayPrice, item.title, item.description);
+      }
+    }));
+
   };
 
   // called to initiate a purchase
@@ -206,8 +257,17 @@ exports = Class(GC.Application, function () {
     transactionInfo = transactionInfo || {};
 
     console.log("Sending transaction data to amplitude", transactionInfo);
+
+
+    // find item in our various purchase lists
+    var item;
+    if (itemName in ITEMS) {
+      item = ITEMS[itemName];
+    } else if (itemName in MANY_ITEMS) {
+      item = MANY_ITEMS[itemName];
+    }
+
     // send to amplitude for tracking and validation
-    var item = ITEMS[itemName];
     amplitude.trackRevenue(
       itemName,
       item.price,
@@ -238,6 +298,18 @@ exports = Class(GC.Application, function () {
   this.restorePurchases = function () {
     this.log("restoring purchases");
     billing.restore(bind(this, this.onRestore));
+  };
+
+  // send all the purchases to the store for localization
+  this.localizePurchases = function () {
+    this.log("localizing purchases");
+    billing.getLocalizedPurchases(Object.keys(ITEMS));
+  };
+
+  // send giant list of purchases to the store for localization
+  this.localizeManyPurchases = function () {
+    this.log("localizing many purchases");
+    billing.getLocalizedPurchases(Object.keys(MANY_ITEMS));
   };
 
   // helper function to wrap up all the demo logging
