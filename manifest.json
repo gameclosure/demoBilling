@@ -1,7 +1,7 @@
 {
   "appID": "629965dd1b8e4987bdfdc76e711d3866",
   "dependencies": {
-    "devkit-core": "https://github.com/gameclosure/devkit-core#v2.0.13",
+    "devkit-core": "https://github.com/gameclosure/devkit-core#v3.0.0-rc1",
     "devkit-billing": "https://github.com/gameclosure/billing#v3.2.0",
     "devkit-amplitude": "https://github.com/gameclosure/amplitude#v2.0.1"
   },
