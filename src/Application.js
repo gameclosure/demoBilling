@@ -223,8 +223,8 @@ exports = Class(GC.Application, function () {
       for (var i = 0; i < itemIds.length; i++) {
         var itemId = itemIds[i];
         var item = data.purchases[itemId];
-        this.log("localized item " + item.title +
-                 " price: " + item.displayPrice);
+        this.log('localized item "' + item.title + '"' +
+                 " price: " + item.currencyCode + ' ' + item.displayPrice);
         logger.log(item.displayPrice, item.title, item.description);
       }
     }));
